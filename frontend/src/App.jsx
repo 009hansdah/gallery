@@ -4,6 +4,8 @@ import ImageViewer from './components/ImageViewer';
 import UploadForm from './components/UploadForm';
 import './App.css';
 
+
+
 function App() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,13 +40,33 @@ function App() {
     fetchPhotos();
   }, []);
 
+  useEffect(() => {
+    const muteVideos = () => {
+      document.querySelectorAll("video").forEach(video => {
+        video.muted = true;
+        video.defaultMuted = true;
+      });
+    };
+
+    muteVideos();
+
+    const observer = new MutationObserver(muteVideos);
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Auto-scroll logic
   useEffect(() => {
     let intervalId;
     if (isAutoScroll && !selectedPhoto) {
       intervalId = setInterval(() => {
         window.scrollBy(0, 1);
-        
+
         // Loop back to top if we reached the bottom
         if (Math.ceil(window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
           window.scrollTo(0, 0);
@@ -65,16 +87,16 @@ function App() {
   const categoryPhotos = activeCategory === 'general'
     ? photos
     : activeCategory === 'known'
-    ? photos.filter(p => Boolean(p.known))
-    : activeCategory === 'upload' ? [] : photos.filter(p => p.category === activeCategory);
+      ? photos.filter(p => Boolean(p.known))
+      : activeCategory === 'upload' ? [] : photos.filter(p => p.category === activeCategory);
 
   const query = searchQuery.trim().toLowerCase();
   const displayedPhotos = query
     ? (activeCategory === 'upload' ? photos : categoryPhotos).filter(photo => {
-        const nameMatch = photo.photo_name && photo.photo_name.toLowerCase().includes(query);
-        const urlMatch = photo.photo_url && photo.photo_url.toLowerCase().includes(query);
-        return Boolean(nameMatch || urlMatch);
-      })
+      const nameMatch = photo.photo_name && photo.photo_name.toLowerCase().includes(query);
+      const urlMatch = photo.photo_url && photo.photo_url.toLowerCase().includes(query);
+      return Boolean(nameMatch || urlMatch);
+    })
     : categoryPhotos;
 
   const handleNext = () => {
@@ -112,8 +134,8 @@ function App() {
             <div className="animate-pulse w-8 h-8 bg-gray-300"></div>
           </div>
         ) : (
-          <MasonryGrid 
-            photos={displayedPhotos} 
+          <MasonryGrid
+            photos={displayedPhotos}
             onPhotoClick={handlePhotoClick}
             searchQuery={searchQuery}
             onClearSearch={() => setSearchQuery('')}
@@ -126,11 +148,11 @@ function App() {
         <div className="nav-bar-container">
           {isSearchOpen ? (
             <div className="flex items-center gap-2">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="w-4 h-4 text-gray-400 shrink-0" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 text-gray-400 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -213,11 +235,11 @@ function App() {
                 title="Known Media"
                 aria-label="Known Media"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -236,11 +258,11 @@ function App() {
                 title="Search photo name or URL"
                 aria-label="Search photo name or URL"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -275,8 +297,8 @@ function App() {
       </div>
 
       {selectedPhoto && (
-        <ImageViewer 
-          photo={selectedPhoto} 
+        <ImageViewer
+          photo={selectedPhoto}
           onClose={closeViewer}
           onNext={handleNext}
           onPrev={handlePrev}
