@@ -10,6 +10,7 @@ class Photo(models.Model):
         ('santhal', 'Santhal'),
     )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    known = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
